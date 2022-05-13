@@ -21,6 +21,7 @@ fi
 
 . .venv/bin/activate
 
-make -j$(nproc)
+make -j$(nproc) link
+make -j1 benchmark
 
 python report.py >README.md
