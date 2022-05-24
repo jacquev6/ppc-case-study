@@ -1,17 +1,37 @@
 versions=$(patsubst %.cpp,%,$(wildcard v?.cpp))
 
 
-link: $(patsubst %,build/%,$(versions))
+link: $(patsubst %,build/%,$(versions)) $(patsubst %,build/%-paral,$(versions))
+
+CFLAGS=-O3 -march=native -std=c++17
 
 build/%: build/main.o build/%.o
-	g++ $^ -o $@
+	g++ $^ $(CFLAGS) -o $@
 
 build/%.o: %.cpp
-	g++ -c -O3 -march=native -std=c++17 $< -o $@
+	g++ $(CFLAGS) -c $< -o $@
+
+build/%-paral: build/main.o build/%-paral.o
+	g++ $^ $(CFLAGS) -fopenmp -o $@
+
+build/%-paral.o: %.cpp
+	g++ $(CFLAGS) -fopenmp -c $< -o $@
 
 
-benchmark: v0.yml
+benchmark: $(patsubst %,build/%-seq.yml,$(versions)) $(patsubst %,build/%-paral-4.yml,$(versions)) $(patsubst %,build/%-paral-14.yml,$(versions)) $(patsubst %,build/%-paral-28.yml,$(versions))
 
-v0.yml: build/v0
-	build/v0 $$(seq 250 250 4000) | tee build/v0.yml
-	mv build/v0.yml v0.yml
+build/%-seq.yml: build/%
+	$< $$(seq 250 250 5000) | tee $@.tmp
+	mv $@.tmp $@
+
+build/%-paral-4.yml: build/%-paral
+	OMP_NUM_THREADS=4 $< $$(seq 250 250 5000) | tee $@.tmp
+	mv $@.tmp $@
+
+build/%-paral-14.yml: build/%-paral
+	OMP_NUM_THREADS=14 $< $$(seq 250 250 5000) | tee $@.tmp
+	mv $@.tmp $@
+
+build/%-paral-28.yml: build/%-paral
+	OMP_NUM_THREADS=28 $< $$(seq 250 250 5000) | tee $@.tmp
+	mv $@.tmp $@

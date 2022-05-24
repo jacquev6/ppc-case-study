@@ -24,4 +24,5 @@ fi
 make -j$(nproc) link
 make -j1 benchmark
 
-python report.py >README.md
+rm -f *.png
+python gen-figures.py README.md
