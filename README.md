@@ -25,9 +25,9 @@ You may want to adapt the parallelism levels to your CPU, in the `Makefile` and 
 ![](vsize-0-0.png)
 
 Despite running at a comparable frequency, my CPU doesn't quite reach the 1.3 billion operations per second achieved by the author on Linux with version 0 for n=4000.
-The performance I get is close to the one they get on macOS. They say the difference they observe between the two OSes is due to macOS not using Transparent Hugepage Support, so I have to check page size on my system (@todo).
+The performance I get is close to the one they get on macOS. They say the difference they observe between the two OSes is due to macOS not using Transparent Hugepage Support, so I have to check the page size used on my system (@todo).
 
-The performance of version 0 decreases between n=1500 and n=1750, similarly to what the author observed...
+The performance of version 0 decreases between n=1500 and n=1750, similarly to what the author observed with a same-sized L3 cache, ...
 
 # Version 1: linear reading
 
