@@ -24,29 +24,34 @@ You may want to adapt the parallelism levels to your CPU, in the `Makefile` and 
 
 ![](vsize-0-0.png)
 
-Despite running at a comparable frequency, my CPU doesn't quite reach the 1.3 billion operations per second achieved by the author on Linux with `v1` for n=4000.
+Despite running at a comparable frequency, my CPU doesn't quite reach the 1.3 billion operations per second achieved by the author on Linux with version 0 for n=4000.
 The performance I get is close to the one they get on macOS. They say the difference they observe between the two OSes is due to macOS not using Transparent Hugepage Support, so I have to check page size on my system (@todo).
 
-The performance of `v0` decreases between n=1500 and n=1750, similarly to what the author observed...
+The performance of version 0 decreases between n=1500 and n=1750, similarly to what the author observed...
 
 # Version 1: linear reading
 
-... and linear reading (in `v1`) fixes that first bottleneck:
+... and linear reading (in version 1) fixes that first bottleneck:
 
 ![](vsize-0-1.png)
+![](vparal-0-1-4000.png)
 
 # Version 2: instruction-level parallelism
 
 ![](vsize-1-2.png)
+![](vparal-0-2-4000.png)
 
 # Version 3: vector instructions
 
 ![](vsize-2-3.png)
+![](vparal-0-3-4000.png)
 
 # Version 4: reuse data in registers
 
 ![](vsize-3-4.png)
+![](vparal-0-4-4000.png)
 
 # Version 5: more register reuse
 
 ![](vsize-4-5.png)
+![](vparal-0-5-4000.png)
