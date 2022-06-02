@@ -2,6 +2,32 @@
 
 set -o errexit
 
+if ! (diff Makefile build/Makefile && diff builder/Dockerfile build/Dockerfile) >/dev/null 2>&1
+then
+  rm -rf build
+  mkdir build
+  cp Makefile build/Makefile
+  cp builder/Dockerfile build/Dockerfile
+  docker build builder
+fi
+
+image=$(docker build --quiet builder)
+
+docker run \
+  --rm \
+  --user $(id -u):$(id -g) `# Avoid creating files as root`\
+  --volume "$PWD:/wd" --workdir /wd \
+  $image \
+    make -j$(nproc) link
+
+docker run \
+  --rm \
+  --user $(id -u):$(id -g) `# Avoid creating files as root`\
+  --volume "$PWD:/wd" --workdir /wd \
+  --gpus all \
+  $image \
+    make -j1 benchmark
+
 if ! diff requirements.txt .venv/requirements.txt >/dev/null 2>&1
 then
   rm -rf .venv
@@ -12,17 +38,6 @@ then
   cp requirements.txt .venv/requirements.txt
 fi
 
-if ! diff Makefile build/Makefile >/dev/null 2>&1
-then
-  rm -rf build
-  mkdir build
-  cp Makefile build/Makefile
-fi
-
 . .venv/bin/activate
-
-make -j$(nproc) link
-make -j1 benchmark
-
 rm -f *.png
 python gen-figures.py README.md
